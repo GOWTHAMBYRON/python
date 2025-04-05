@@ -1,0 +1,26 @@
+The products are :
+pnum :1
+pname : milk
+unit_price :30.0
+quantity : 2
+Amount :60.0
+pnum :2
+pname : chips
+unit_price :5.0
+quantity : 5
+Amount :25.0
+pnum :vegies
+pname : carrot
+unit_price :44.0
+quantity : 3
+Amount :132.0
+pnum :4
+pname : juice
+unit_price :55.0
+quantity : 4
+Amount :220.0
+pnum :5
+pname : mango
+unit_price :45.0
+quantity : 67
+Amount :3015.0
