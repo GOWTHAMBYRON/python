@@ -1,0 +1,208 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:background="#407642"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TAXI BOOKING"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🚖"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="130dp"
+        android:layout_gravity="center" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompletePickup"
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:hint="Enter Pickup Location"
+        android:layout_marginTop="50dp" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteDrop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:hint="Enter Drop Location"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:id="@+id/buttonBook"
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_height="wrap_content"
+        android:text="Book Taxi"
+        android:layout_marginTop="30dp" />
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_17;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.AutoCompleteTextView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.view.View;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private AutoCompleteTextView autoCompletePickup, autoCompleteDrop;
+    private Button buttonBook;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        autoCompletePickup = findViewById(R.id.autoCompletePickup);
+        autoCompleteDrop = findViewById(R.id.autoCompleteDrop);
+        buttonBook = findViewById(R.id.buttonBook);
+
+        String[] sampleLocations = {
+                "Vizhupuram", "Jhalesh House", "Mahabalipuram", "Kosapet FishMarket",
+                "Sakthi Mahal", "KannyaKumari", "Avadi", "Maduravoyal"
+        };
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, sampleLocations);
+
+        autoCompletePickup.setAdapter(adapter);
+        autoCompleteDrop.setAdapter(adapter);
+
+        buttonBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String pickup = autoCompletePickup.getText().toString();
+                String drop = autoCompleteDrop.getText().toString();
+
+                if (pickup.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Please enter Pickup Locations", Toast.LENGTH_SHORT).show();
+                } 
+                else if(drop.isEmpty()){
+                    Toast.makeText(MainActivity.this, "Please enter Drop Locations", Toast.LENGTH_SHORT).show();
+                }
+            else {
+                    Toast.makeText(MainActivity.this, "Booking Confirmed", Toast.LENGTH_SHORT).show();
+                    
+                    Intent intent = new Intent(MainActivity.this, ConfirmationActivity.class);
+                    intent.putExtra("Pickup", pickup);
+                    intent.putExtra("Drop", drop);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
+}
+
+activity_confirmation.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:background="#407642"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🚖"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="130dp"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/textViewPickup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pickup Location:"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_marginTop="60dp" />
+
+    <TextView
+        android:id="@+id/textViewDrop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Drop Location:"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enjoy Riding!!✌"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="24dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="90dp"
+        />
+</LinearLayout>
+
+ConfirmationActivity.java
+package com.example.model_17;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ConfirmationActivity extends AppCompatActivity {
+
+    private TextView textViewPickup, textViewDrop;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_confirmation);
+
+        textViewPickup = findViewById(R.id.textViewPickup);
+        textViewDrop = findViewById(R.id.textViewDrop);
+
+        Intent intent = getIntent();
+        String pickup = intent.getStringExtra("Pickup");
+        String drop = intent.getStringExtra("Drop");
+
+        textViewPickup.setText("Pickup Location: " + pickup);
+        textViewDrop.setText("Drop Location: " + drop);
+    }
+}
+
+AndroidManifest.xml
+<activity 
+  android:name=".ConfirmationActivity"> </activity>

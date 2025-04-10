@@ -1,0 +1,308 @@
+activity_main.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_margin="10dp"
+    android:background="#457EB1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🏩"
+        android:layout_marginLeft="105dp"
+        android:textSize="110dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content"
+        android:text="BAKERY"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginLeft="115dp"
+        android:textSize="34dp"/>
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="300dp" />
+
+    <EditText
+        android:id="@+id/editTextQuantity"
+        android:hint="Enter Quantity"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:backgroundTint="#FFFFFF"
+        android:drawableEnd="@android:drawable/ic_menu_close_clear_cancel"
+        android:paddingEnd="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <Button
+        android:id="@+id/buttonOrder"
+        android:text="Place Order"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:backgroundTint="#40B845"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp" />
+
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_18;
+
+import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.MotionEvent;
+import android.widget.*;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    ListView listView;
+    EditText editTextQuantity;
+    Button buttonOrder;
+
+    String[] items = {"Bread", "Cake", "Cookies", "Muffin"};
+    int[] prices = {30, 150, 50, 40};
+    int[] images = {R.drawable.bread, R.drawable.cake, R.drawable.cookies, R.drawable.muffin};
+
+    CustomAdapter adapter;
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        listView = findViewById(R.id.listView);
+        editTextQuantity = findViewById(R.id.editTextQuantity);
+        buttonOrder = findViewById(R.id.buttonOrder);
+
+        editTextQuantity.setOnTouchListener((v, event) -> {
+            final int DRAWABLE_END = 2;
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (event.getRawX() >= (editTextQuantity.getRight() - editTextQuantity.getCompoundDrawables()[DRAWABLE_END].getBounds().width())) {
+                    editTextQuantity.setText("");
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        adapter = new CustomAdapter(this, items, images, prices);
+        listView.setAdapter(adapter);
+
+        buttonOrder.setOnClickListener(v -> {
+            String qtyText = editTextQuantity.getText().toString();
+            if (qtyText.isEmpty()) {
+                Toast.makeText(this, "Enter quantity", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            int quantity = Integer.parseInt(qtyText);
+            boolean[] selected = adapter.getCheckedItems();
+
+            ArrayList<String> selectedItems = new ArrayList<>();
+            int total = 0;
+
+            for (int i = 0; i < selected.length; i++) {
+                if (selected[i]) {
+                    selectedItems.add(items[i] + " - ₹" + prices[i]);
+                    total += prices[i] * quantity;
+                }
+            }
+
+            if (selectedItems.isEmpty()) {
+                Toast.makeText(this, "Select at least one item", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Intent intent = new Intent(MainActivity.this, BillActivity.class);
+            intent.putExtra("items", selectedItems.toArray(new String[0]));
+            intent.putExtra("quantity", quantity);
+            intent.putExtra("total", total);
+            startActivity(intent);
+        });
+    }
+}
+
+list_item.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:orientation="horizontal">
+
+    <CheckBox
+        android:id="@+id/itemCheckbox"
+        android:buttonTint="#40B845"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <ImageView
+        android:id="@+id/itemImage"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginStart="8dp"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/itemName"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:textSize="18sp"
+        android:textColor="#FFFFFF"/>
+</LinearLayout>
+
+CustomAdapter.java
+package com.example.model_18;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.view.*;
+import android.widget.*;
+
+public class CustomAdapter extends BaseAdapter {
+
+    Context context;
+    String[] itemNames;
+    int[] itemImages;
+    int[] prices;
+    boolean[] checkedItems;
+
+    public CustomAdapter(Context context, String[] itemNames, int[] itemImages, int[] prices) {
+        this.context = context;
+        this.itemNames = itemNames;
+        this.itemImages = itemImages;
+        this.prices = prices;
+        this.checkedItems = new boolean[itemNames.length];
+    }
+
+    @Override
+    public int getCount() {
+        return itemNames.length;
+    }
+
+    @Override
+    public Object getItem(int i) {
+        return itemNames[i];
+    }
+
+    @Override
+    public long getItemId(int i) {
+        return i;
+    }
+
+    public boolean[] getCheckedItems() {
+        return checkedItems;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        @SuppressLint("ViewHolder") View row = LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
+
+        TextView itemName = row.findViewById(R.id.itemName);
+        ImageView itemImage = row.findViewById(R.id.itemImage);
+        CheckBox itemCheckbox = row.findViewById(R.id.itemCheckbox);
+
+        String nameWithPrice = itemNames[position] + " - ₹" + prices[position];
+        itemName.setText(nameWithPrice);
+
+        itemImage.setImageResource(itemImages[position]);
+        itemCheckbox.setChecked(checkedItems[position]);
+
+        itemCheckbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            checkedItems[position] = isChecked;
+        });
+
+        return row;
+    }
+}
+
+BillActivity.java
+package com.example.model_18;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class BillActivity extends AppCompatActivity {
+
+    TextView textViewBill;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bill);
+
+        textViewBill = findViewById(R.id.textViewBill);
+
+        String[] items = getIntent().getStringArrayExtra("items");
+        int quantity = getIntent().getIntExtra("quantity", 0);
+        int total = getIntent().getIntExtra("total", 0);
+
+        StringBuilder bill = new StringBuilder();
+        bill.append("Items Ordered:\n");
+
+        for (String item : items) {
+            bill.append("- ").append(item).append("\n");
+        }
+
+        bill.append("\nQuantity per item: ").append(quantity);
+        bill.append("\nTotal: ₹").append(total);
+
+        textViewBill.setText(bill.toString());
+    }
+}
+
+activity_bill.xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:layout_margin="10dp"
+    android:background="#457EB1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🏩"
+        android:layout_marginLeft="105dp"
+        android:textSize="110dp"/>
+
+    <TextView
+        android:id="@+id/textViewBill"
+        android:textSize="24dp"
+        android:layout_marginTop="100dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+
+AndroidManifest.xml
+ <activity android:name=".BillActivity"/>
+
+Add bread,muffin,cookies and cake in any format and download from web and add in the drawables(add the same name like in the above). 

@@ -1,0 +1,174 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="#5967C8"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="HOTEL BOOKING"
+        android:layout_gravity="center"
+        android:textSize="24dp"/>
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="🏩"
+        android:layout_gravity="center"
+        android:textSize="124dp"/>
+    
+
+    <EditText
+        android:id="@+id/editTextName"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_marginTop="80dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Guest Name" />
+
+    <Spinner
+        android:id="@+id/spinnerRoomType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/buttonBook"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Book Room" />
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_12;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    EditText editTextName;
+    Spinner spinnerRoomType;
+    Button buttonBook;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        editTextName = findViewById(R.id.editTextName);
+        spinnerRoomType = findViewById(R.id.spinnerRoomType);
+        buttonBook = findViewById(R.id.buttonBook);
+
+        String[] roomTypes = {"Select Room", "Single Room", "Double Room", "Vip"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, roomTypes);
+        spinnerRoomType.setAdapter(adapter);
+
+        buttonBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String name = editTextName.getText().toString().trim();
+                String roomType = spinnerRoomType.getSelectedItem().toString();
+
+                if (name.isEmpty()) {
+                    Toast.makeText(getApplicationContext(), "Please enter your name", Toast.LENGTH_SHORT).show();
+                } else if (roomType.equals("Select Room")) {
+                    Toast.makeText(getApplicationContext(), "Please select a valid room type", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent intent = new Intent(MainActivity.this, BookingDetailsActivity.class);
+                    intent.putExtra("guestName", name);
+                    intent.putExtra("roomType", roomType);
+                    startActivity(intent);
+
+                }
+            }
+        });
+    }
+}
+
+activity_booking_details.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:background="#5967C8"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:text="🏩"
+        android:layout_gravity="center"
+        android:textSize="124dp"/>
+
+    <TextView
+        android:id="@+id/textViewDetails"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginTop="150dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp" />
+
+    <TextView
+        android:text="Successfully Booked 👍👍!!"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_marginTop="110dp"
+        android:layout_marginLeft="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22dp" />
+</LinearLayout>
+
+BookingDetailsActivity.java
+package com.example.model_12;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class BookingDetailsActivity extends AppCompatActivity {
+    TextView textViewDetails;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_booking_details);
+
+        textViewDetails = findViewById(R.id.textViewDetails);
+
+        String name = getIntent().getStringExtra("guestName");
+        String roomType = getIntent().getStringExtra("roomType");
+
+        textViewDetails.setText("Guest: " + name + "\nRoom Type: " + roomType);
+    }
+}
+
+AndroidManifest.xml
+<activity
+android:name=".BookingDetailsActivity">
+</activity>

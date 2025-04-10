@@ -1,0 +1,197 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:background="#D96C95"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:text="BUS BOOKING"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="120dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:text="🚌"
+        android:layout_gravity="center"/>
+
+    <Spinner
+        android:id="@+id/spinnerRoutes"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupSeats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioSeat1"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seat 1" />
+        <RadioButton
+            android:id="@+id/radioSeat2"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seat 2" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnBook"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Book Ticket" />
+
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_11;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    Spinner spinnerRoutes;
+    RadioGroup radioGroupSeats;
+    Button btnBook;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        spinnerRoutes = findViewById(R.id.spinnerRoutes);
+        radioGroupSeats = findViewById(R.id.radioGroupSeats);
+        btnBook = findViewById(R.id.btnBook);
+
+        String[] routes = {"Select a Route","Route X", "Route Y", "Route Z"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, routes);
+        spinnerRoutes.setAdapter(adapter);
+
+        btnBook.setOnClickListener(v -> {
+            String route = spinnerRoutes.getSelectedItem().toString();
+            int selectedSeatId = radioGroupSeats.getCheckedRadioButtonId();
+            if (selectedSeatId != -1) {
+                RadioButton selectedSeat = findViewById(selectedSeatId);
+                String seat = selectedSeat.getText().toString();
+                Intent intent = new Intent(MainActivity.this, BookingDetailsActivity.class);
+                intent.putExtra("route", route);
+                intent.putExtra("seat", seat);
+                startActivity(intent);
+            }
+        });
+    }
+}
+
+activity_booking_details.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:background="#D96C95"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="120dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:text="🚌"
+        android:layout_gravity="center"/>
+
+    <TextView
+        android:id="@+id/txtDetails"
+        android:layout_marginTop="200dp"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnEmail"
+        android:layout_marginTop="10dp"
+        android:textSize="24dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Send Email" />
+
+</LinearLayout>
+
+BookingDetailsActivity.java
+package com.example.model_11;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class BookingDetailsActivity extends AppCompatActivity {
+    TextView txtDetails;
+    Button btnEmail;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_booking_details);
+
+        txtDetails = findViewById(R.id.txtDetails);
+        btnEmail = findViewById(R.id.btnEmail);
+
+        String route = getIntent().getStringExtra("route");
+        String seat = getIntent().getStringExtra("seat");
+        String details = "Bus Route: " + route + "\nSeat: " + seat;
+        txtDetails.setText(details);
+
+        btnEmail.setOnClickListener(v -> {
+            Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:rbraghul1508@gmail.com"));
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Bus Ticket Confirmation");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, details);
+            startActivity(Intent.createChooser(emailIntent, "Send Email"));
+        });
+    }
+}
+
+AndroidManifest.xml
+<activity
+ android:name=".BookingDetailsActivity">
+</activity>

@@ -1,0 +1,245 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="#8E6206"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/dateLabel1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:text="STUDENT ATTENDANCE FORM"
+        android:textColor="@color/white"
+        android:layout_marginLeft="28dp"
+        android:textStyle="bold"
+        android:textSize="23sp"/>
+
+    <TextView
+        android:id="@+id/dateLabel"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Date"
+        android:layout_marginLeft="50dp"
+        android:textSize="20sp"/>
+
+    <DatePicker
+        android:id="@+id/datePicker"
+        android:layout_marginLeft="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner"/>
+
+
+    <TextView
+        android:id="@+id/studentListLabel"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Present Students"
+        android:layout_marginLeft="50dp"
+        android:textSize="20sp"
+        android:layout_marginTop="20dp"/>
+
+    <CheckBox
+        android:id="@+id/student1"
+        android:textColor="@color/white"
+        android:layout_marginLeft="50dp"
+        android:buttonTint="@color/white"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="chivaraam"/>
+
+    <CheckBox
+        android:id="@+id/student2"
+        android:textColorHighlight="@color/white"
+        android:textColor="@color/white"
+        android:layout_marginLeft="50dp"
+        android:layout_width="wrap_content"
+        android:buttonTint="@color/white"
+        android:layout_height="wrap_content"
+        android:textSize="16dp"
+        android:text="Surya"/>
+
+    <CheckBox
+        android:id="@+id/student3"
+        android:textColor="@color/white"
+        android:buttonTint="@color/white"
+        android:layout_marginLeft="50dp"
+        android:textSize="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sakthi"/>
+
+    <CheckBox
+        android:id="@+id/student4"
+        android:textSize="16dp"
+        android:textColor="@color/white"
+        android:layout_marginLeft="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/white"
+        android:text="dhanush"/>
+
+    <Button
+        android:id="@+id/submitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Submit Attendance"
+        android:textSize="19dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="20dp"/>
+
+</LinearLayout>
+
+ActivityMain.java
+package com.example.model_2;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private DatePicker datePicker;
+    private CheckBox chivaraam, surya, sakthi, dhanush;
+    private Button submitButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        datePicker = findViewById(R.id.datePicker);
+        chivaraam = findViewById(R.id.student1);
+        surya = findViewById(R.id.student2);
+        sakthi= findViewById(R.id.student3);
+        dhanush= findViewById(R.id.student4);
+        submitButton = findViewById(R.id.submitButton);
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int day = datePicker.getDayOfMonth();
+                int month = datePicker.getMonth() + 1;
+                int year = datePicker.getYear();
+
+
+                StringBuilder presentStudents = new StringBuilder();
+                if (chivaraam.isChecked()) presentStudents.append("chivaraam, ");
+                if (surya.isChecked()) presentStudents.append("surya, ");
+                if (sakthi.isChecked()) presentStudents.append("sakthi, ");
+                if (dhanush.isChecked()) presentStudents.append("dhanush, ");
+
+
+                if (presentStudents.length() > 0) {
+                    presentStudents.setLength(presentStudents.length() -2);
+                }
+
+                Intent intent = new Intent(MainActivity.this, AttendanceSummaryActivity.class);
+                intent.putExtra("date", day + "/" + month + "/" + year);
+                intent.putExtra("presentStudents", presentStudents.toString());
+
+                startActivity(intent);
+                Toast.makeText(getApplicationContext(), "ATTENDANCE IS SUBMITTED!", Toast.LENGTH_LONG).show();
+
+            }
+        });
+    }
+}
+
+activity_attendance_summary.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="#8E6206"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/dateText"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date: "
+        android:textSize="20sp"/>
+
+
+
+    <TextView
+        android:id="@+id/presentStudentsText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Present Students: "
+        android:textSize="20sp"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_marginTop="40dp"
+        android:text="These students are the best and good students in the campus !👍"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🏫 "
+        android:layout_marginLeft="110dp"
+        android:layout_marginTop="90dp"
+        android:textSize="110sp"/>
+</LinearLayout>
+
+AttendanceSummaryActivity.java
+package com.example.model_2;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class AttendanceSummaryActivity extends AppCompatActivity {
+
+    private TextView dateText, presentStudentsText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_attendance_summary);
+
+        dateText = findViewById(R.id.dateText);
+        presentStudentsText = findViewById(R.id.presentStudentsText);
+
+        Intent intent = getIntent();
+        String date = intent.getStringExtra("date");
+        String presentStudents = intent.getStringExtra("presentStudents");
+
+        dateText.setText("Date: " + date);
+        presentStudentsText.setText("Present Students: " + (presentStudents.isEmpty() ? "None" : presentStudents));
+    }
+}
+
+AndroidManifest.xml
+<activity android:name="AttendanceSummaryActivity"/> 

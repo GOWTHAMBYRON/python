@@ -1,0 +1,187 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#73AB75"
+    android:padding="16dp"
+    android:layout_margin="10dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Restaurant Menu"
+        android:textSize="34sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="56dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🏨"
+        android:textSize="100sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="56dp" />
+
+    <GridLayout
+        android:id="@+id/menuGrid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="2"
+        android:rowCount="6"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="16dp" >
+
+        <CheckBox
+            android:id="@+id/item1"
+            android:layout_width="0dp"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:buttonTint="#256A27"
+            android:layout_columnWeight="1"
+            android:textSize="16sp"
+            android:text="Burger ($10)" />
+
+        <CheckBox
+            android:id="@+id/item2"
+            android:textSize="16sp"
+            android:buttonTint="#256A27"
+            android:textColor="@color/white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:text="Pizza ($12)" />
+
+        <CheckBox
+            android:id="@+id/item3"
+            android:textColor="@color/white"
+            android:layout_width="0dp"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:buttonTint="#256A27"
+            android:text="Salad ($8)" />
+
+        <CheckBox
+            android:id="@+id/item4"
+            android:textColor="@color/white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:buttonTint="#256A27"
+            android:textSize="16sp"
+            android:layout_columnWeight="1"
+            android:text="Fries ($6)" />
+
+        <CheckBox
+            android:id="@+id/item5"
+            android:textSize="16sp"
+            android:layout_width="0dp"
+            android:buttonTint="#256A27"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:text="Soda ($3)" />
+
+        <CheckBox
+            android:id="@+id/item6"
+            android:textColor="@color/white"
+            android:layout_width="0dp"
+            android:textSize="16sp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:buttonTint="#256A27"
+            android:text="Ice Cream ($5)" />
+
+        <CheckBox
+            android:id="@+id/item7"
+            android:buttonTint="#256A27"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:text="biryani ($80)" />
+
+        <CheckBox
+            android:id="@+id/item8"
+            android:textSize="16sp"
+            android:buttonTint="#256A27"
+            android:textColor="@color/white"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_columnWeight="1"
+            android:text="fried rice ($92)" />
+
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/totalBill"
+        android:layout_height="wrap_content"
+        android:text="Total: $0.00"
+        android:layout_marginTop="60dp"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal" />
+
+</LinearLayout>
+MainActivity.java
+package com.example.model_14;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.CheckBox;
+import android.widget.TextView;
+
+public class MainActivity extends AppCompatActivity {
+
+    private CheckBox item1, item2, item3, item4, item5, item6,item7,item8;
+    private TextView totalBill;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        item1 = findViewById(R.id.item1);
+        item2 = findViewById(R.id.item2);
+        item3 = findViewById(R.id.item3);
+        item4 = findViewById(R.id.item4);
+        item5 = findViewById(R.id.item5);
+        item6 = findViewById(R.id.item6);
+        item7 = findViewById(R.id.item7);
+        item8 = findViewById(R.id.item8);
+        totalBill = findViewById(R.id.totalBill);
+
+        item1.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+        item2.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+        item3.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+        item4.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+        item5.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+        item6.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+        item7.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+        item8.setOnCheckedChangeListener((buttonView, isChecked) -> calculateTotal());
+
+        calculateTotal(); 
+    }
+
+    private void calculateTotal() {
+        double total = 0;
+
+        if (item1.isChecked()) total += 10.00;
+        if (item2.isChecked()) total += 12.00;
+        if (item3.isChecked()) total += 8.00;
+        if (item4.isChecked()) total += 6.00;
+        if (item5.isChecked()) total += 3.00;
+        if (item6.isChecked()) total += 5.00;
+        if (item7.isChecked()) total += 80.00;
+        if (item8.isChecked()) total += 92.00;
+
+        totalBill.setText("Total: $" + String.format("%.2f", total));
+    }
+}

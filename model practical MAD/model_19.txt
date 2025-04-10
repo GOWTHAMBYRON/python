@@ -1,0 +1,221 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D78823"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="34dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:text="BIO-DATA"/>
+
+    <EditText
+        android:id="@+id/nameEditText"
+        android:layout_marginTop="50dp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Full Name" />
+
+    <EditText
+        android:id="@+id/fatherEditText"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Father's Name" />
+
+    <EditText
+        android:id="@+id/motherEditText"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Mother's Name" />
+
+    <EditText
+        android:id="@+id/emailEditText"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email" />
+
+    <AutoCompleteTextView
+        android:id="@+id/countryAutoComplete"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_height="wrap_content"
+        android:hint="Select Country" />
+
+    <AutoCompleteTextView
+        android:id="@+id/bloodAutoComplete"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Select Blood Group" />
+
+    <Button
+        android:id="@+id/submitButton"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:backgroundTint="#A63030"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit" />
+
+</LinearLayout>
+
+
+MainActivity.java
+package com.example.model_19;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText nameEditText, fatherEditText, motherEditText, emailEditText;
+    AutoCompleteTextView countryAutoComplete, bloodAutoComplete;
+    Button submitButton;
+
+    String[] countries = {"India", "USA", "UK", "Canada", "Germany", "Australia"};
+    String[] bloodGroups = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        nameEditText = findViewById(R.id.nameEditText);
+        fatherEditText = findViewById(R.id.fatherEditText);
+        motherEditText = findViewById(R.id.motherEditText);
+        emailEditText = findViewById(R.id.emailEditText);
+        countryAutoComplete = findViewById(R.id.countryAutoComplete);
+        bloodAutoComplete = findViewById(R.id.bloodAutoComplete);
+        submitButton = findViewById(R.id.submitButton);
+
+        ArrayAdapter<String> countryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, countries);
+        countryAutoComplete.setAdapter(countryAdapter);
+
+        ArrayAdapter<String> bloodAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, bloodGroups);
+        bloodAutoComplete.setAdapter(bloodAdapter);
+
+        submitButton.setOnClickListener(v -> {
+            String name = nameEditText.getText().toString();
+            String father = fatherEditText.getText().toString();
+            String mother = motherEditText.getText().toString();
+            String email = emailEditText.getText().toString();
+            String country = countryAutoComplete.getText().toString();
+            String blood = bloodAutoComplete.getText().toString();
+
+            Intent intent = new Intent(MainActivity.this, ConfirmationActivity.class);
+            intent.putExtra("name", name);
+            intent.putExtra("father", father);
+            intent.putExtra("mother", mother);
+            intent.putExtra("email", email);
+            intent.putExtra("country", country);
+            intent.putExtra("blood", blood);
+            startActivity(intent);
+        });
+    }
+}
+
+activity_confirmation.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#D78823"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/confirmationTextView"
+        android:layout_width="match_parent"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginTop="250dp"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:text="👍👍!!"
+        android:gravity="center"
+        android:textSize="40dp"
+        android:layout_height="wrap_content" />
+</LinearLayout>
+
+ConfirmationActivity.java
+package com.example.model_19;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ConfirmationActivity extends AppCompatActivity {
+
+    TextView confirmationTextView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_confirmation);
+
+        confirmationTextView = findViewById(R.id.confirmationTextView);
+
+        String name = getIntent().getStringExtra("name");
+        String father = getIntent().getStringExtra("father");
+        String mother = getIntent().getStringExtra("mother");
+        String email = getIntent().getStringExtra("email");
+        String country = getIntent().getStringExtra("country");
+        String blood = getIntent().getStringExtra("blood");
+
+        String message = "Biodata Submitted:\n\n" +
+                "Name: " + name + "\n" +
+                "Father: " + father + "\n" +
+                "Mother: " + mother + "\n" +
+                "Email: " + email + "\n" +
+                "Country: " + country + "\n" +
+                "Blood Group: " + blood;
+
+        confirmationTextView.setText(message);
+    }
+}
+
+AndroidManifest.xml
+<activity android:name =".ConfirmationActivity"/>

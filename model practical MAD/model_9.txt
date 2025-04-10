@@ -1,0 +1,160 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:background="#953D3D"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="26dp"
+        android:text="MASS TICKET BOOKING"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="100dp"
+        android:text="📽"
+        android:textColor="@color/white"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/selectedMovie"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Movie: Avengers"
+        android:layout_marginTop="80dp"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/pickDateButton"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:text="Pick Date" />
+
+    <TextView
+        android:id="@+id/selectedDate"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected Date: "
+        />
+
+    <Button
+        android:id="@+id/selectSeatButton"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:text="Select Seat Type" />
+
+    <TextView
+        android:id="@+id/selectedSeat"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Seat Type: Regular"
+        android:textColor="@color/white"
+        android:textSize="22sp" />
+
+    <Button
+        android:id="@+id/confirmButton"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirm Booking" />
+
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_9;
+
+import android.app.DatePickerDialog;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.PopupMenu;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity {
+
+    private TextView selectedMovie, selectedDate, selectedSeat;
+    private Button pickDateButton, selectSeatButton, confirmButton;
+    private String seatType = "Regular";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        selectedMovie = findViewById(R.id.selectedMovie);
+        selectedDate = findViewById(R.id.selectedDate);
+        selectedSeat = findViewById(R.id.selectedSeat);
+        pickDateButton = findViewById(R.id.pickDateButton);
+        selectSeatButton = findViewById(R.id.selectSeatButton);
+        confirmButton = findViewById(R.id.confirmButton);
+
+        pickDateButton.setOnClickListener(v -> showDatePicker());
+        selectSeatButton.setOnClickListener(v -> showSeatPopupMenu(v));
+        confirmButton.setOnClickListener(v -> confirmBooking());
+    }
+
+    private void showDatePicker() {
+        Calendar c = Calendar.getInstance();
+        new DatePickerDialog(this, (view, y, m, d) ->
+                selectedDate.setText(d + "/" + (m + 1) + "/" + y),
+                c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+    }
+
+    private void showSeatPopupMenu(View view) {
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.seat_menu, popupMenu.getMenu());
+        popupMenu.setOnMenuItemClickListener(item -> {
+            seatType = item.getTitle().toString();
+            selectedSeat.setText(seatType);
+            return true;
+        });
+        popupMenu.show();
+    }
+
+    private void confirmBooking() {
+        String movie = selectedMovie.getText().toString();
+        String date = selectedDate.getText().toString();
+        String seat = selectedSeat.getText().toString();
+
+        if (movie.isEmpty() || date.isEmpty() || seat.isEmpty()) {
+            Toast.makeText(this, "Please select all options", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Booking Confirmed for " + movie + " on " + date + " (" + seat + ")", Toast.LENGTH_LONG).show();
+        }
+    }
+}
+
+menu/seat_menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/regular" android:title="Regular" />
+    <item android:id="@+id/vip" android:title="VIP" />
+</menu>

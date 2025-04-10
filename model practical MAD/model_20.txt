@@ -1,0 +1,176 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="#766C6C"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:text="ELECTRICITY BILL"
+        android:textColor="@color/white"
+        android:textSize="26dp"/>
+
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_marginTop="80dp"
+        android:textSize="20dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Customer Name" />
+
+    <EditText
+        android:id="@+id/etUnits"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Units Consumed"
+        android:inputType="number" />
+
+    <Button
+        android:id="@+id/btnGenerate"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Generate Bill" />
+
+    <TextView
+        android:id="@+id/tvBill"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/btnViewBills"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="View All Bills" />
+
+    <Button
+        android:id="@+id/btnDeleteAll"
+        android:textSize="20dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete All Bills"/>
+
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_20;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ViewBillsActivity extends AppCompatActivity {
+    TextView tvAllBills;
+    SQLiteDatabase db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_bills);
+        tvAllBills = findViewById(R.id.tvAllBills);
+        db = openOrCreateDatabase("ElectricityDB", MODE_PRIVATE, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM bills", null);
+        StringBuilder builder = new StringBuilder();
+        while (cursor.moveToNext()) {
+            builder.append("Customer: ").append(cursor.getString(1))
+                    .append("\nUnits: ").append(cursor.getInt(2))
+                    .append("\nAmount: ₹").append(cursor.getDouble(3))
+                    .append("\n\n");
+        }
+        cursor.close();
+        tvAllBills.setText(builder.toString());
+    }
+}
+
+activity_view_bills.xml
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_margin="10dp"
+    android:background="#766C6C"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvAllBills"
+            android:textSize="18dp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</ScrollView>
+
+ViewBillsActivity.java
+package com.example.model_20;
+
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ViewBillsActivity extends AppCompatActivity {
+    TextView tvAllBills;
+    SQLiteDatabase db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_view_bills);
+        tvAllBills = findViewById(R.id.tvAllBills);
+        db = openOrCreateDatabase("ElectricityDB", MODE_PRIVATE, null);
+        Cursor cursor = db.rawQuery("SELECT * FROM bills", null);
+        StringBuilder builder = new StringBuilder();
+        while (cursor.moveToNext()) {
+            builder.append("Customer: ").append(cursor.getString(1))
+                    .append("\nUnits: ").append(cursor.getInt(2))
+                    .append("\nAmount: ₹").append(cursor.getDouble(3))
+                    .append("\n\n");
+        }
+        cursor.close();
+        tvAllBills.setText(builder.toString());
+    }
+}
+
+AndroidManifest.xml
+<activity android:name=".ViewBillsActivity"/>

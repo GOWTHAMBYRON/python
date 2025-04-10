@@ -1,0 +1,181 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    android:background="#46AB22"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:textColor="@color/white"
+        android:layout_height="wrap_content"
+        android:text="BANK APP"
+        android:layout_marginLeft="110dp"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:textColor="@color/white"
+        android:layout_height="wrap_content"
+        android:text="🏦"
+        android:layout_marginLeft="120dp"
+        android:textSize="90sp"
+        android:layout_marginBottom="20dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select Payment Method"
+        android:layout_gravity="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/paymentMethodGroup"
+        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/radioCreditCard"
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="115dp"
+            android:textColor="@color/white"
+            android:layout_height="wrap_content"
+            android:textSize="18dp"
+            android:text="Credit Card" />
+
+        <RadioButton
+            android:id="@+id/radioDebitCard"
+            android:layout_width="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="115dp"
+            android:text="Debit Card" />
+
+        <RadioButton
+            android:id="@+id/radioBankTransfer"
+            android:textSize="18dp"
+            android:textColor="@color/white"
+            android:layout_marginLeft="115dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bank Transfer" />
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/amountInput"
+        android:textSize="18dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:hint="Enter amount"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
+        android:textSize="18dp"
+        android:layout_height="wrap_content"
+        android:text="Confirm Transaction" />
+
+    <TextView
+        android:id="@+id/confirmationMessage"
+        android:layout_marginTop="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:paddingTop="10dp"/>
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_4;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+public class MainActivity extends AppCompatActivity {
+
+    private RadioGroup paymentMethodGroup;
+    private EditText amountInput;
+    private TextView confirmationMessage;
+    private Button btnConfirm;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        paymentMethodGroup = findViewById(R.id.paymentMethodGroup);
+        amountInput = findViewById(R.id.amountInput);
+        confirmationMessage = findViewById(R.id.confirmationMessage);
+        btnConfirm = findViewById(R.id.btnConfirm);
+
+        btnConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                processTransaction();
+            }
+        });
+    }
+
+    private void processTransaction() {
+        int selectedId = paymentMethodGroup.getCheckedRadioButtonId();
+        String paymentMethod = "";
+
+        if (selectedId != -1) {
+            RadioButton selectedRadioButton = findViewById(selectedId);
+            paymentMethod = selectedRadioButton.getText().toString();
+        } else {
+            Toast.makeText(this, "Please select a payment method", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String amount = amountInput.getText().toString().trim();
+        if (amount.isEmpty()) {
+            Toast.makeText(this, "Please enter an amount", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String transactionDetails = "Payment Method: " + paymentMethod + "\nAmount: $" + amount + "\n\n";
+        confirmationMessage.setText("Transaction Successful 💲💲!\n" + transactionDetails);
+        saveTransaction(transactionDetails);
+    }
+
+    private void saveTransaction(String details) {
+        String fileName = "transactions.txt";
+
+        try (FileOutputStream fos = openFileOutput(fileName, MODE_APPEND)) {
+            fos.write(details.getBytes());
+            Toast.makeText(this, "Transaction saved!", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(this, "Error saving transaction", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
+}

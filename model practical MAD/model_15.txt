@@ -1,0 +1,116 @@
+activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:background="#D54A4A"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="BIKE BOOKERS"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:padding="10dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" 🏍 "
+        android:textSize="130dp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:padding="10dp"/>
+
+
+    <TextView
+        android:id="@+id/selectedBike"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selected: None"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:padding="10dp"/>
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <Button
+        android:id="@+id/bookButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Confirm Booking"
+        android:backgroundTint="#21BEF0"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+</LinearLayout>
+
+MainActivity.java
+package com.example.model_15;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    ListView listView;
+    TextView selectedBike;
+    Button bookButton;
+    String[] bikes = {"Rx 200", "Royal Enfield", "Passion Pro", "Pulsar", "Harley-Davidson"};
+    String chosenBike = "";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        listView = findViewById(R.id.listView);
+        selectedBike = findViewById(R.id.selectedBike);
+        bookButton = findViewById(R.id.bookButton);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, bikes);
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                chosenBike = bikes[position];
+                selectedBike.setText("Selected: " + chosenBike);
+            }
+        });
+
+        bookButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!chosenBike.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "Booking confirmed for " + chosenBike, Toast.LENGTH_SHORT).show();
+                    Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:9940282826"));
+                    smsIntent.putExtra("sms_body", "Your booking for " + chosenBike + " is confirmed.");
+                    startActivity(smsIntent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Please select a bike", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+}
